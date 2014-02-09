@@ -1,6 +1,4 @@
-var blockfile = require('./lib/blockfile');
-var btreedb = require('./lib/btreedb');
-var sbon = require('./lib/sbon');
+var starbound = require('starbound-files');
 
 var openButton = document.getElementById('open');
 
@@ -19,12 +17,12 @@ function initRoot(root) {
 function readAssets(root) {
   root.getFile('assets/packed.pak', {}, function (assets) {
     assets.file(function (file) {
-      blockfile.open(file, function (blockFile) {
+      starbound.blockfile.open(file, function (blockFile) {
         console.log('blockfile', blockFile);
-        btreedb.open(blockFile, function (db) {
+        starbound.btreedb.open(blockFile, function (db) {
           console.log('btreedb', db);
           db.get('\xbe\x94<\\\xff\xbaT\xd8~\xcf#P\t\xe2\xa4\xdc2~4mX\xe2\x05Q\x0b}n\x84=\x01\x81\x93', function (buffer) {
-            var reader = sbon.getReader(buffer);
+            var reader = starbound.sbon.getReader(buffer);
             console.log(reader.readStringList());
           });
         });
