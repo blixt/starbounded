@@ -1,0 +1,18 @@
+{
+  "name": "StarboundEd",
+  "version": "0.1.0",
+  "description": "A world viewer for Starbound.",
+  "manifest_version": 2,
+  "minimum_chrome_version": "32",
+  "offline_enabled": true,
+  "icons": {"128": "assets/icon_128.png"},
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    {"fileSystem": ["directory", "retainEntries", "write"]},
+    "storage"
+  ]
+}
