@@ -1,5 +1,8 @@
 var starbound = require('starbound-files');
 
+// Create an assets manager which will deal with package files etc.
+var assets = starbound.assets.createManager();
+
 var openButton = document.getElementById('open');
 
 /**
@@ -15,18 +18,31 @@ function initRoot(root) {
 }
 
 function readAssets(root) {
-  root.getFile('assets/packed.pak', {}, function (assets) {
-    assets.file(function (file) {
-      starbound.blockfile.open(file, function (blockFile) {
-        console.log('blockfile', blockFile);
-        starbound.btreedb.open(blockFile, function (db) {
-          console.log('btreedb', db);
-          db.get('\xbe\x94<\\\xff\xbaT\xd8~\xcf#P\t\xe2\xa4\xdc2~4mX\xe2\x05Q\x0b}n\x84=\x01\x81\x93', function (buffer) {
-            var reader = starbound.sbon.getReader(buffer);
-            console.log(reader.readStringList());
-          });
+  root.getFile('universe/beta_73998977_11092106_-913658_12_8.world', {}, function (entry) {
+    starbound.world.open(entry, function (err, world) {
+      world.getMetadata(function (err, data) {
+        // Get the spawn point.
+        var x = data.playerStart[0] >> 5,
+            y = data.playerStart[1] >> 5;
+
+        // Load the region data around the spawn point.
+        world.getRegion(x, y, function (err, region) {
+          for (var tx = 0; tx < 32; tx++) {
+            for (var ty = 0; ty < 32; ty++) {
+              var bg = region.getBackground(tx, ty);
+              var fg = region.getForeground(tx, ty);
+              // TODO: Render background and foreground tiles.
+            }
+          }
         });
       });
+    });
+  });
+
+  // Add the assets directory.
+  root.getDirectory('assets', {}, function (entry) {
+    assets.addRoot(entry, function () {
+      console.log('Loaded', Object.keys(assets._index).length, 'files into the index');
     });
   });
 }
