@@ -1,7 +1,7 @@
-var starbound = require('starbound-files');
+var starbound = require('starbound-assets');
 
 // Create an assets manager which will deal with package files etc.
-var assets = starbound.assets.createManager();
+var assets = new starbound.AssetsManager({workerPath: 'build/worker.js'});
 
 var openButton = document.getElementById('open');
 
@@ -18,31 +18,15 @@ function initRoot(root) {
 }
 
 function readAssets(root) {
-  root.getFile('universe/beta_73998977_11092106_-913658_12_8.world', {}, function (entry) {
-    starbound.world.open(entry, function (err, world) {
-      world.getMetadata(function (err, data) {
-        // Get the spawn point.
-        var x = data.playerStart[0] >> 5,
-            y = data.playerStart[1] >> 5;
-
-        // Load the region data around the spawn point.
-        world.getRegion(x, y, function (err, region) {
-          for (var tx = 0; tx < 32; tx++) {
-            for (var ty = 0; ty < 32; ty++) {
-              var bg = region.getBackground(tx, ty);
-              var fg = region.getForeground(tx, ty);
-              // TODO: Render background and foreground tiles.
-            }
-          }
-        });
-      });
-    });
-  });
-
   // Add the assets directory.
   root.getDirectory('assets', {}, function (entry) {
     assets.addRoot(entry, function () {
-      console.log('Loaded', Object.keys(assets._index).length, 'files into the index');
+      // Proof of concept: load an image through the worker and render it on screen.
+      assets.getBlobURL('/objects/tiered/tier3door/tier3door.png', function (err, url) {
+        var img = new Image();
+        img.src = url;
+        document.body.appendChild(img);
+      });
     });
   });
 }
