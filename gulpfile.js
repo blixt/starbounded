@@ -27,7 +27,9 @@ gulp.task('watch', function () {
   // TEMPORARY vvv
   gulp.watch([
     'node_modules/starbound-assets/*.js',
-    'node_modules/starbound-assets/node_modules/starbound-files/index.js',
+    'node_modules/starbound-assets/lib/*.js',
+    'node_modules/starbound-assets/node_modules/workerproxy/*.js',
+    'node_modules/starbound-assets/node_modules/starbound-files/*.js',
     'node_modules/starbound-assets/node_modules/starbound-files/lib/*.js'
   ], ['browserify']);
   // TEMPORARY ^^^

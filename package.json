@@ -13,7 +13,8 @@
     "url": "https://github.com/blixt/starbounded.git"
   },
   "dependencies": {
-    "starbound-assets": "~0.1.0"
+    "q": "git+https://github.com/kriskowal/q.git#3c398ddd45e5775de0675d101d4f5283e62d6a85",
+    "starbound-assets": "~0.2.0"
   },
   "devDependencies": {
     "gulp": "~3.5.2",
