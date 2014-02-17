@@ -1,8 +1,10 @@
 var Q = require('q');
-var starbound = require('starbound-assets');
+var AssetsManager = require('starbound-assets').AssetsManager;
+var WorldManager = require('starbound-world').WorldManager;
 
 // Create an assets manager which will deal with package files etc.
-var assets = new starbound.AssetsManager({workerPath: 'build/worker.js'});
+var assets = new AssetsManager({workerPath: 'build/worker-assets.js'});
+var world = new WorldManager({workerPath: 'build/worker-world.js'});
 
 var openButton = document.getElementById('open');
 
@@ -34,15 +36,23 @@ function loadWorld(root, path) {
   root.getFile(path, {}, function (entry) {
     entry.file(function (file) {
       console.log('loading world', path);
-      assets.openWorld(file, deferred.makeNodeResolver());
+      world.open(file, deferred.makeNodeResolver());
     });
   });
 
   return deferred.promise;
 }
 
-var loadRegion = Q.nbind(assets.getRegion, assets);
+var loadRegion = Q.nbind(world.getRegion, world);
 var loadTileResources = Q.nbind(assets.loadTileResources, assets);
+
+function createCanvas() {
+  var canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  document.body.appendChild(canvas);
+  return canvas;
+}
 
 function readAssets(root) {
   var resources = loadAssets(root)
@@ -50,7 +60,7 @@ function readAssets(root) {
       return loadTileResources();
     });
 
-  var region = loadWorld(root, 'universe/beta_73998977_11092106_-913658_12_8.world')
+  loadWorld(root, 'universe/beta_73998977_11092106_-913658_12_8.world')
     .then(function (metadata) {
       console.log('world metadata', metadata);
 
@@ -58,10 +68,19 @@ function readAssets(root) {
       var x = metadata.playerStart[0] >> 5,
           y = metadata.playerStart[1] >> 5;
 
-      return loadRegion(x, y);
+      renderRegion(createCanvas(), 249, y + 1, resources);
+      renderRegion(createCanvas(), x, y + 1, resources);
+      renderRegion(createCanvas(), x + 1, y + 1, resources);
+      renderRegion(createCanvas(), 249, y, resources);
+      renderRegion(createCanvas(), x, y, resources);
+      renderRegion(createCanvas(), x + 1, y, resources);
     });
+}
 
-  Q.all([region, resources]).spread(function (region, resources) {
+function renderRegion(canvas, x, y, resources) {
+  var region = loadRegion(x, y);
+
+  return Q.all([region, resources]).spread(function (region, resources) {
     var resourceIds = region.getResourceIds();
 
     var materialPromises = getResourceImages(resourceIds.materials, resources.materials);
@@ -74,16 +93,13 @@ function readAssets(root) {
         images[resourceIds.materials[i]] = materialImages[i];
       }
 
-      var canvas = document.createElement('canvas');
-      canvas.width = 256;
-      canvas.height = 256;
-      document.body.appendChild(canvas);
-
       var context = canvas.getContext('2d');
+
+      console.time('render region');
+
       context.fillStyle = '#000';
       context.fillRect(0, 0, 256, 256);
 
-      console.time('render region');
       for (var y = 0; y < 32; y++) {
         for (var x = 0; x < 32; x++) {
           var tile = region.getTile(x, y);
@@ -100,18 +116,19 @@ function readAssets(root) {
           drawTile(context, tile[0], x * 8, y * 8, variant, region.getNeighbors(x, y), images, resources.materials);
         }
       }
+
       console.timeEnd('render region');
     });
   });
 }
 
 function drawTile(context, material, x, y, variant, neighbors, images, materials) {
-  var dtop = neighbors.top > 0,
-      dright = neighbors.right > 0,
-      dbottom = neighbors.bottom > 0,
-      dleft = neighbors.left > 0;
+  var dtop = neighbors.top > 0 && neighbors.top != 39,
+      dright = neighbors.right > 0 && neighbors.right != 39,
+      dbottom = neighbors.bottom > 0 && neighbors.bottom != 39,
+      dleft = neighbors.left > 0 && neighbors.left != 39;
 
-  if (material > 0) {
+  if (material > 0 && material != 39) {
     context.drawImage(images[material], variant % materials[material].variants * 16 + 4, 12, 8, 8, x, y, 8, 8);
     dtop = dtop && material > neighbors.top;
     dright = dright && material > neighbors.right;
@@ -224,6 +241,12 @@ function getResourceImages(ids, resources) {
   var promises = [];
   for (var i = 0; i < ids.length; i++) {
     var resource = resources[ids[i]];
+
+    if (resource.platform) {
+      promises.push(null);
+      continue;
+    }
+
     var path = resourcePath(resource, 'frames');
     var imagePromise = Q.ninvoke(assets, 'getBlobURL', path)
       .then(function (url) {
