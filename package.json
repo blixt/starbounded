@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "q": "git+https://github.com/kriskowal/q.git#3c398ddd45e5775de0675d101d4f5283e62d6a85",
-    "starbound-assets": "~0.3.0",
-    "starbound-world": "~0.1.0"
+    "starbound-assets": "~0.4.0",
+    "starbound-world": "~0.2.0"
   },
   "devDependencies": {
     "gulp": "~3.5.2",
