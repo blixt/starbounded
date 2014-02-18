@@ -29,8 +29,12 @@ gulp.task('browserify-worker-world', function () {
   return browserifyPipe('node_modules/starbound-world/worker.js', 'worker-world.js');
 });
 
-gulp.task('browserify', ['browserify-worker-assets', 'browserify-worker-world'], function () {
+gulp.task('browserify-app', ['browserify-worker-assets', 'browserify-worker-world'], function () {
   return browserifyPipe('app.js');
+});
+
+gulp.task('browserify-web', ['browserify-worker-assets', 'browserify-worker-world'], function () {
+  return browserifyPipe('web.js');
 });
 
 gulp.task('watch', function () {
@@ -43,10 +47,11 @@ gulp.task('watch', function () {
     'node_modules/starbound-assets/node_modules/starbound-files/lib/*.js',
     'node_modules/starbound-world/*.js',
     'node_modules/starbound-world/lib/*.js'
-  ], ['browserify']);
+  ], ['browserify-app', 'browserify-web']);
   // TEMPORARY ^^^
 
-  gulp.watch(['app.js'], ['browserify']);
+  gulp.watch(['app.js'], ['browserify-app']);
+  gulp.watch(['web.js'], ['browserify-web']);
 });
 
-gulp.task('default', ['browserify']);
+gulp.task('default', ['browserify-app', 'browserify-web']);
