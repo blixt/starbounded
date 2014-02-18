@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>StarboundEd – Web Viewer</title>
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	</head>
+	<body>
+		<div class="jumbotron">
+			<div class="container">
+				<div class="page-header">
+					<h1>StarboundEd <small>Web Viewer</small></h1>
+				</div>
+				<p>Welcome! This is a very simple demo of <a href="https://github.com/blixt/starbounded">StarboundEd</a>
+				to show you that it works. Just follow the instructions below! Don't worry, <strong>no data will be uploaded</strong>!
+				Everything that happens on this page stays on your computer. :)</p>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="row">
+				<form name="starbounded">
+					<div class="col-md-4">
+						<h2>Step 1</h2>
+						<p>Select <code>assets/packed.pak</code>
+						<input name="assets" type="file"></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Step 2</h2>
+						<p>Select your <code>.world</code> file
+						<input name="world" type="file"></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Step 3</h2>
+						<p>After a few seconds your world should render below.
+						Use the arrow keys to scroll around.</p>
+				</form>
+			</div>
+
+			<p>&nbsp;</p>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default">
+						<div class="panel-heading"><h3 class="panel-title">Rendered world</h3></div>
+						<div class="panel-body" id="viewport" style="overflow: hidden; height: 500px;"></div>
+						<div class="panel-footer">Use the arrow keys to scroll!</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="build/web.js"></script>
+	</body>
+</html>
+
