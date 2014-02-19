@@ -13,12 +13,13 @@
     "url": "https://github.com/blixt/starbounded.git"
   },
   "dependencies": {
+    "moment": "~2.5.1",
     "starbound-assets": "~0.4.0",
-    "starbound-world": "~0.3.0"
+    "starbound-world": "~0.3.3"
   },
   "devDependencies": {
     "gulp": "~3.5.2",
-    "gulp-browserify": "~0.4.5",
+    "gulp-browserify": "~0.4.6",
     "gulp-rename": "~1.1.0",
     "gulp-uglify": "~0.2.1",
     "gulp-util": "~2.2.14"
