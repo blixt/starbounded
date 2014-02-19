@@ -4,6 +4,15 @@
 		<meta charset="utf-8">
 		<title>StarboundEd – Web Viewer</title>
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<style>
+			#select-files, .directory-support #select-directory {
+				display: block;
+			}
+
+			#select-directory, .directory-support #select-files {
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="jumbotron">
@@ -17,9 +26,9 @@
 			</div>
 		</div>
 
-		<div class="container">
-			<div class="row">
-				<form name="starbounded">
+		<form name="starbounded">
+			<div class="container">
+				<div class="row" id="select-files">
 					<div class="col-md-4">
 						<h2>Step 1</h2>
 						<p>Select <code>assets/packed.pak</code>
@@ -34,21 +43,43 @@
 						<h2>Step 3</h2>
 						<p>After a few seconds your world should render below.
 						Use the arrow keys to scroll around.</p>
-				</form>
-			</div>
+					</div>
+				</div>
 
-			<p>&nbsp;</p>
+				<div class="row" id="select-directory">
+					<div class="col-md-4">
+						<h2>Step 1</h2>
+						<p>Select your Starbound directory
+						<input name="root" type="file" webkitdirectory></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Step 2</h2>
+						<p>Choose a world, then click <em>Load</em>:<br>
+						<select class="col-md-12" name="worldList" disabled>
+							<option>Select directory first</option>
+						</select><br>
+						<button class="btn btn-xs btn-primary" name="loadWorld" type="button" disabled>Load</button></p>
+					</div>
+					<div class="col-md-4">
+						<h2>Step 3</h2>
+						<p>Profit! After a few seconds your world should render
+						below. Use the arrow keys to scroll around.</p>
+					</div>
+				</div>
 
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-						<div class="panel-heading"><h3 class="panel-title">Rendered world</h3></div>
-						<div class="panel-body" id="viewport" style="overflow: hidden; height: 500px;"></div>
-						<div class="panel-footer">Use the arrow keys to scroll!</div>
+				<p>&nbsp;</p>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h3 class="panel-title">Rendered world</h3></div>
+							<div class="panel-body" id="viewport" style="overflow: hidden; height: 500px;"></div>
+							<div class="panel-footer">Use the arrow keys to scroll!</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</form>
 
 		<script src="build/web.js"></script>
 	</body>
