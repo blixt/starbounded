@@ -1,13 +1,19 @@
 StarboundEd
 ===========
 
-This is a Chrome app that lets you open your Starbound directory and
-view the worlds etc. within.
+This is a web app that lets you open your Starbound directory and view
+the worlds etc. within.
 
-**Note:** This project is in a super early stage right now, so it's
-barely functional.
+![](https://i.imgur.com/Gmz2Shf.png)
 
 This project is under an MIT license.
+
+
+Trying it out
+-------------
+
+The easiest way to try it out is to go to
+[the demo page](http://blixt.github.io/starbounded/).
 
 
 Installing the Chrome app
@@ -36,9 +42,37 @@ $ npm install
 $ node_modules/gulp/bin/gulp.js
 [gulp] Using file /.../starbounded/gulpfile.js
 [gulp] Working directory changed to /.../starbounded
+[gulp] Running 'browserify-worker-assets'...
+[gulp] Running 'browserify-worker-world'...
+[gulp] Finished 'browserify-worker-world' in 486 ms
+[gulp] Finished 'browserify-worker-assets' in 545 ms
+[gulp] Running 'browserify-app'...
+[gulp] Running 'browserify-web'...
+[gulp] Finished 'browserify-app' in 155 ms
+[gulp] Finished 'browserify-web' in 154 ms
 [gulp] Running 'default'...
-[gulp] Finished 'default' in 4.57 ms
+[gulp] Finished 'default' in 5.9 μs
 ```
+
+
+### Web viewer
+
+If you want to try the simple web viewer, you just need to serve the
+current directory somehow. One easy way to do so is to use the `serve`
+package:
+
+```bash
+$ npm install -g serve
+# ... lots of output ...
+
+$ serve
+serving /.../starbounded on port 3000
+```
+
+Now you can open http://localhost:3000/web.html in your browser.
+
+
+### Chrome app
 
 To actually run this Chrome app, you need to add it to Chrome. Here's
 how:
