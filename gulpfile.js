@@ -12,7 +12,7 @@ function browserifyPipe(path, opt_newName) {
       .on('error', function (error) {
         gutil.log(gutil.colors.red('Browserify error:'), error.message);
       })
-    .pipe(production ? uglify() : gutil.noop());
+    .pipe(production ? uglify({outSourceMap: true}) : gutil.noop());
 
   if (opt_newName) {
     pipeline = pipeline.pipe(rename(opt_newName));
