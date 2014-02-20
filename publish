@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+git checkout master 2>/dev/null && \
+gulp --production && \
+mv build temp && \
+git checkout gh-pages && \
+git pull >/dev/null && \
+mv temp/{web,worker-assets,worker-world}.js build && \
+rm -r temp && \
+git show master:web.html > index.html && \
+git commit -a && \
+git push origin gh-pages
+
+git checkout master
