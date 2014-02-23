@@ -11,7 +11,30 @@ var assets = new AssetsManager({workerPath: 'build/worker-assets.js'});
 var world = new WorldManager({workerPath: 'build/worker-world.js'});
 
 // Set up a renderer that will render the graphics onto screen.
-var renderer = new WorldRenderer(document.getElementById('viewport'), world, assets);
+var viewport = document.getElementById('viewport');
+var renderer = new WorldRenderer(viewport, world, assets);
+
+var dragging = null;
+viewport.addEventListener('mousedown', function (e) {
+  dragging = [e.clientX, e.clientY];
+});
+
+document.addEventListener('mousemove', function (e) {
+  if (!dragging) return;
+  renderer.scroll(dragging[0] - e.clientX, e.clientY - dragging[1], true);
+  dragging[0] = e.clientX;
+  dragging[1] = e.clientY;
+});
+
+document.addEventListener('mouseup', function () {
+  dragging = null;
+});
+
+viewport.addEventListener('wheel', function (e) {
+  if (e.deltaY > 0) renderer.zoomOut();
+  if (e.deltaY < 0) renderer.zoomIn();
+  e.preventDefault();
+});
 
 function loadAssets(file) {
   assets.addFile('/', file, function (err) {
