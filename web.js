@@ -104,12 +104,33 @@ if (document.starbounded.root.webkitdirectory) {
   document.body.classList.add('directory-support');
 
   document.starbounded.root.onchange = function () {
+    var pendingFiles = 0;
+
     for (var i = 0; i < this.files.length; i++) {
-      var file = this.files[i];
-      if (file.name == 'packed.pak') {
-        loadAssets(file);
-      } else if (file.name.match(/\.world$/)) {
+      var file = this.files[i],
+          path = file.webkitRelativePath,
+          match;
+
+      // Skip directories.
+      if (file.name == '.') continue;
+
+      if (file.name.match(/\.world$/)) {
         addWorld(file);
+      } else if (match = path.match(/^Starbound\/assets(\/.*)/)) {
+        // Not sure why music files are stored incorrectly like this.
+        if (match[1].substr(0, 13) == '/music/music/') {
+          match[1] = match[1].substr(6);
+        }
+
+        // Add the file and then preload the renderer once all assets have been
+        // added.
+        pendingFiles++;
+        assets.addFile(match[1], file, function (err) {
+          pendingFiles--;
+          if (!pendingFiles) {
+            renderer.preload();
+          }
+        });
       }
     }
   };
