@@ -15,6 +15,26 @@ var viewport = document.getElementById('viewport');
 var renderer = new WorldRenderer(viewport, world, assets);
 
 
+// Attempt to play the music for the world.
+world.on('load', function (world) {
+  // I'm too lazy to support Angry Koala worlds. :)
+  if (world.metadata.__version__ != 2) return;
+
+  var tracks = world.metadata.worldTemplate.templateData.biomes[0].musicTrack.day.tracks;
+  var trackIndex = Math.round(Math.random() * (tracks.length - 1));
+
+  assets.getBlobURL(tracks[trackIndex], function (err, url) {
+    if (err) return;
+
+    var audio = document.createElement('audio');
+    audio.autoplay = true;
+    audio.controls = true;
+    audio.src = url;
+    document.getElementById('audio').appendChild(audio);
+  });
+});
+
+
 // Enable dragging to scroll.
 var dragging = null;
 viewport.addEventListener('mousedown', function (e) {
