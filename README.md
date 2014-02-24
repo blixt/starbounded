@@ -4,7 +4,7 @@ StarboundEd
 This is a web app that lets you open your Starbound directory and view
 the worlds etc. within.
 
-![](http://i.imgur.com/CaamVom.jpg)
+![](http://i.imgur.com/H3Ywotm.jpg)
 
 ![](http://i.imgur.com/zCIIBNg.png)
 
@@ -89,6 +89,18 @@ how:
 To launch the app, you can click the *Launch* link on the *Extensions*
 page, or you can launch it through any of the normal means of launching
 a Chrome app.
+
+
+Dependencies
+------------
+
+This project has a number of dependencies that you may want to have a
+look at, as they hold most of the logic for parsing Starbound files and
+rendering worlds.
+
+* [`starbound-assets`](https://github.com/blixt/js-starbound-assets)
+* [`starbound-world`](https://github.com/blixt/js-starbound-world)
+* [`starbound-files`](https://github.com/blixt/js-starbound-files)
 
 
 Tips & tricks
