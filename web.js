@@ -14,6 +14,8 @@ var world = new WorldManager({workerPath: 'build/worker-world.js'});
 var viewport = document.getElementById('viewport');
 var renderer = new WorldRenderer(viewport, world, assets);
 
+
+// Enable dragging to scroll.
 var dragging = null;
 viewport.addEventListener('mousedown', function (e) {
   dragging = [e.clientX, e.clientY];
@@ -30,11 +32,13 @@ document.addEventListener('mouseup', function () {
   dragging = null;
 });
 
+// Enable zooming with the mouse wheel.
 viewport.addEventListener('wheel', function (e) {
   if (e.deltaY > 0) renderer.zoomOut();
   if (e.deltaY < 0) renderer.zoomIn();
   e.preventDefault();
 });
+
 
 function loadAssets(file) {
   assets.addFile('/', file, function (err) {
@@ -50,52 +54,47 @@ function loadWorld(file) {
 
 var worldsAdded, groups = {};
 function addWorld(file) {
-  var list = document.starbounded.worldList;
-
-  if (!worldsAdded) {
-    // Remove the "Select directory" message.
-    list.remove(0);
-    list.removeAttribute('disabled');
-    document.starbounded.loadWorld.removeAttribute('disabled');
-    worldsAdded = {};
-  }
-
-  var pieces = file.name.replace('.world', '').split('_');
-  var sector = pieces[0];
-
-  var group = groups[sector];
-  if (!group) {
-    group = document.createElement('optgroup');
-    group.setAttribute('label', sector);
-    groups[sector] = group;
-    list.appendChild(group);
-  }
-
-  // Add the world in the right place according to time modified.
-  for (var i = 0; i < group.childNodes.length; i++) {
-    var other = worldsAdded[group.childNodes[i].value];
-    if (other.lastModifiedDate < file.lastModifiedDate) break;
-  }
-
-  worldsAdded[file.name] = file;
-
-  var label = 'planet ' + pieces[4];
-  if (pieces[5]) label += ' moon ' + pieces[5];
-  label += ' @ (' + pieces[1] + ', ' + pieces[2] + ')';
-  label += ', played ' + moment(file.lastModifiedDate).fromNow();
-
-  var option = new Option(label, file.name);
-  option.setAttribute('disabled', '');
-  group.insertBefore(option, group.childNodes[i]);
-
   // Verify that the world file is valid.
   var reader = new FileReader();
   reader.onloadend = function () {
-    if (reader.result == 'SBBF02') {
-      option.removeAttribute('disabled');
-    } else {
-      option.label = '[pre-angry] ' + option.label;
+    if (reader.result != 'SBBF02') return;
+
+    var list = document.starbounded.worldList;
+
+    if (!worldsAdded) {
+      // Remove the "Select directory" message.
+      list.remove(0);
+      list.removeAttribute('disabled');
+      document.starbounded.loadWorld.removeAttribute('disabled');
+      worldsAdded = {};
     }
+
+    worldsAdded[file.name] = file;
+
+    var pieces = file.name.replace('.world', '').split('_');
+    var sector = pieces[0];
+
+    var group = groups[sector];
+    if (!group) {
+      group = document.createElement('optgroup');
+      group.setAttribute('label', sector);
+      groups[sector] = group;
+      list.appendChild(group);
+    }
+
+    var label = 'planet ' + pieces[4];
+    if (pieces[5]) label += ' moon ' + pieces[5];
+    label += ' @ (' + pieces[1] + ', ' + pieces[2] + ')';
+    label += ', played ' + moment(file.lastModifiedDate).fromNow();
+
+    // Add the world in the right place according to time modified.
+    for (var i = 0; i < group.childNodes.length; i++) {
+      var other = worldsAdded[group.childNodes[i].value];
+      if (other.lastModifiedDate < file.lastModifiedDate) break;
+    }
+
+    var option = new Option(label, file.name);
+    group.insertBefore(option, group.childNodes[i]);
   };
   reader.readAsText(file.slice(0, 6));
 }
