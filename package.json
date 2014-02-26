@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "moment": "~2.5.1",
-    "starbound-assets": "~0.5.0",
+    "starbound-assets": "~0.6.0",
     "starbound-world": "~0.4.1"
   },
   "devDependencies": {
