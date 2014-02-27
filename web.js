@@ -131,8 +131,8 @@ if (document.starbounded.root.webkitdirectory) {
           path = file.webkitRelativePath,
           match;
 
-      // Skip directories.
-      if (file.name == '.') continue;
+      // Skip hidden files/directories.
+      if (file.name[0] == '.') continue;
 
       if (file.name.match(/\.world$/)) {
         addWorld(file);
