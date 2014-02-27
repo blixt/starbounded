@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "moment": "~2.5.1",
-    "starbound-assets": "~0.6.0",
-    "starbound-world": "~0.4.1"
+    "starbound-assets": "~0.7.0",
+    "starbound-world": "~0.4.3"
   },
   "devDependencies": {
     "gulp": "~3.5.2",
