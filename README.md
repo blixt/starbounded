@@ -4,7 +4,7 @@ StarboundEd
 This is a web app that lets you open your Starbound directory and view
 the worlds etc. within.
 
-![](http://i.imgur.com/wdQtJLq.jpg)
+![](http://i.imgur.com/qNY45kx.jpg)
 
 ![](http://i.imgur.com/zCIIBNg.png)
 
