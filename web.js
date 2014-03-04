@@ -5,7 +5,10 @@ var WorldManager = require('starbound-world').WorldManager;
 var WorldRenderer = require('starbound-world').WorldRenderer;
 
 // Create an assets manager which will deal with package files etc.
-var assets = new AssetsManager({workerPath: 'build/worker-assets.js'});
+var assets = new AssetsManager({
+  workerPath: 'build/worker-assets.js',
+  workers: 4
+});
 
 // Create a world manager that handles loading the world and its regions.
 var world = new WorldManager({workerPath: 'build/worker-world.js'});
