@@ -1,3 +1,4 @@
+var es6ify = require('es6ify');
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var rename = require('gulp-rename');
@@ -8,7 +9,7 @@ function browserifyPipe(path, opt_newName) {
   var production = !!gutil.env.production;
 
   var pipeline = gulp.src(path)
-    .pipe(browserify({debug: !production}))
+    .pipe(browserify({add: es6ify.runtime, debug: !production, transform: es6ify}))
       .on('error', function (error) {
         gutil.log(gutil.colors.red('Browserify error:'), error.message);
       })

@@ -18,6 +18,7 @@
     "starbound-world": "~0.4.5"
   },
   "devDependencies": {
+    "es6ify": "~0.4.8",
     "gulp": "~3.5.2",
     "gulp-browserify": "~0.4.6",
     "gulp-rename": "~1.1.0",
