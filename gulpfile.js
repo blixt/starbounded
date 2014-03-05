@@ -51,7 +51,7 @@ gulp.task('watch', function () {
   ], ['browserify-app', 'browserify-web']);
   // TEMPORARY ^^^
 
-  gulp.watch(['app.js'], ['browserify-app']);
+  gulp.watch(['app.js', 'lib/*.js', 'web.js'], ['browserify-app']);
   gulp.watch(['web.js'], ['browserify-web']);
 });
 

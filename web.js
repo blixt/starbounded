@@ -1,32 +1,20 @@
 var moment = require('moment');
 
-var AssetsManager = require('starbound-assets').AssetsManager;
-var WorldManager = require('starbound-world').WorldManager;
-var WorldRenderer = require('starbound-world').WorldRenderer;
+var common = require('./lib/common');
 
-// Create an assets manager which will deal with package files etc.
-var assets = new AssetsManager({
-  workerPath: 'build/worker-assets.js',
-  workers: 4
-});
-
-// Create a world manager that handles loading the world and its regions.
-var world = new WorldManager({workerPath: 'build/worker-world.js'});
-
-// Set up a renderer that will render the graphics onto screen.
 var viewport = document.getElementById('viewport');
-var renderer = new WorldRenderer(viewport, world, assets);
+var starbound = common.setup(viewport);
 
 
 // Attempt to play the music for the world.
-world.on('load', function (world) {
+starbound.world.on('load', function (world) {
   // I'm too lazy to support Angry Koala worlds. :)
   if (world.metadata.__version__ != 2) return;
 
   var tracks = world.metadata.worldTemplate.templateData.biomes[0].musicTrack.day.tracks;
   var trackIndex = Math.round(Math.random() * (tracks.length - 1));
 
-  assets.getBlobURL(tracks[trackIndex], function (err, url) {
+  starbound.assets.getBlobURL(tracks[trackIndex], function (err, url) {
     if (err) return;
 
     var audio = document.createElement('audio');
@@ -38,40 +26,15 @@ world.on('load', function (world) {
 });
 
 
-// Enable dragging to scroll.
-var dragging = null;
-viewport.addEventListener('mousedown', function (e) {
-  dragging = [e.clientX, e.clientY];
-});
-
-document.addEventListener('mousemove', function (e) {
-  if (!dragging) return;
-  renderer.scroll(dragging[0] - e.clientX, e.clientY - dragging[1], true);
-  dragging[0] = e.clientX;
-  dragging[1] = e.clientY;
-});
-
-document.addEventListener('mouseup', function () {
-  dragging = null;
-});
-
-// Enable zooming with the mouse wheel.
-viewport.addEventListener('wheel', function (e) {
-  if (e.deltaY > 0) renderer.zoomOut();
-  if (e.deltaY < 0) renderer.zoomIn();
-  e.preventDefault();
-});
-
-
 function loadAssets(file) {
-  assets.addFile('/', file, function (err) {
-    renderer.preload();
+  starbound.assets.addFile('/', file, function (err) {
+    starbound.renderer.preload();
   });
 }
 
 function loadWorld(file) {
-  world.open(file, function (err, metadata) {
-    renderer.render();
+  starbound.world.open(file, function (err, metadata) {
+    starbound.renderer.render();
   });
 }
 
@@ -148,10 +111,10 @@ if (document.starbounded.root.webkitdirectory) {
         // Add the file and then preload the renderer once all assets have been
         // added.
         pendingFiles++;
-        assets.addFile(match[1], file, function (err) {
+        starbound.assets.addFile(match[1], file, function (err) {
           pendingFiles--;
           if (!pendingFiles) {
-            renderer.preload();
+            starbound.renderer.preload();
           }
         });
       }
@@ -176,24 +139,3 @@ if (document.starbounded.root.webkitdirectory) {
     loadWorld(this.files[0]);
   };
 }
-
-document.onkeydown = function (event) {
-  switch (event.keyCode) {
-    case 37:
-      renderer.scroll(-1, 0);
-      break;
-    case 38:
-      renderer.scroll(0, 1);
-      break;
-    case 39:
-      renderer.scroll(1, 0);
-      break;
-    case 40:
-      renderer.scroll(0, -1);
-      break;
-    default:
-      return;
-  }
-
-  event.preventDefault();
-};

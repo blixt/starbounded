@@ -1,13 +1,7 @@
-var AssetsManager = require('starbound-assets').AssetsManager;
-var WorldManager = require('starbound-world').WorldManager;
-var WorldRenderer = require('starbound-world').WorldRenderer;
+var common = require('./lib/common');
 
-// Create an assets manager which will deal with package files etc.
-var assets = new AssetsManager({workerPath: 'build/worker-assets.js'});
-var world = new WorldManager({workerPath: 'build/worker-world.js'});
-
-// Set up a renderer that will render the graphics onto screen.
-var renderer = new WorldRenderer(document.getElementById('viewport'), world, assets);
+var viewport = document.getElementById('viewport');
+var starbound = common.setup(viewport);
 
 var openButton = document.getElementById('open');
 
@@ -29,34 +23,16 @@ function initRoot(root) {
 function readRoot(root) {
   openButton.style.display = 'none';
 
-  document.body.addEventListener('keydown', function (event) {
-    switch (event.keyCode) {
-      case 37:
-        renderer.scroll(-1, 0);
-        break;
-      case 38:
-        renderer.scroll(0, 1);
-        break;
-      case 39:
-        renderer.scroll(1, 0);
-        break;
-      case 40:
-        renderer.scroll(0, -1);
-        break;
-    }
-  });
-
   // Load all the assets.
   root.getDirectory('assets', {}, function (entry) {
-    assets.addRoot(entry, function () {
-      renderer.preload();
+    starbound.assets.addRoot(entry, function () {
+      starbound.renderer.preload();
 
       var path = 'universe/beta_73998977_11092106_-913658_12_8.world';
       root.getFile(path, {}, function (entry) {
         entry.file(function (file) {
-          console.log('Loading world', path);
-          world.open(file, function (err, metadata) {
-            renderer.center(metadata.playerStart[0], metadata.playerStart[1]);
+          starbound.world.open(file, function (err, metadata) {
+            starbound.renderer.render();
           });
         });
       });
