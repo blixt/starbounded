@@ -11,7 +11,12 @@ starbound.world.on('load', function (world) {
   // I'm too lazy to support Angry Koala worlds. :)
   if (world.metadata.__version__ != 2) return;
 
-  var tracks = world.metadata.worldTemplate.templateData.biomes[0].musicTrack.day.tracks;
+  try {
+    var tracks = world.metadata.worldTemplate.templateData.biomes[0].musicTrack.day.tracks;
+  } catch (e) {
+    return;
+  }
+
   var trackIndex = Math.round(Math.random() * (tracks.length - 1));
 
   starbound.assets.getBlobURL(tracks[trackIndex], function (err, url) {
@@ -57,21 +62,28 @@ function addWorld(file) {
 
     worldsAdded[file.name] = file;
 
-    var pieces = file.name.replace('.world', '').split('_');
-    var sector = pieces[0];
+    var groupName, label;
+    if (file.name.substr(-10) == '.shipworld') {
+      groupName = 'ships';
+      label = 'Ship for ' + file.name.substr(0, file.name.length - 10);
+    } else {
+      var pieces = file.name.replace('.world', '').split('_');
 
-    var group = groups[sector];
-    if (!group) {
-      group = document.createElement('optgroup');
-      group.setAttribute('label', sector);
-      groups[sector] = group;
-      list.appendChild(group);
+      groupName = pieces[0];
+
+      label = 'planet ' + pieces[4];
+      if (pieces[5]) label += ' moon ' + pieces[5];
+      label += ' @ (' + pieces[1] + ', ' + pieces[2] + ')';
+      label += ', played ' + moment(file.lastModifiedDate).fromNow();
     }
 
-    var label = 'planet ' + pieces[4];
-    if (pieces[5]) label += ' moon ' + pieces[5];
-    label += ' @ (' + pieces[1] + ', ' + pieces[2] + ')';
-    label += ', played ' + moment(file.lastModifiedDate).fromNow();
+    var group = groups[groupName];
+    if (!group) {
+      group = document.createElement('optgroup');
+      group.setAttribute('label', groupName);
+      groups[groupName] = group;
+      list.appendChild(group);
+    }
 
     // Add the world in the right place according to time modified.
     for (var i = 0; i < group.childNodes.length; i++) {
@@ -100,7 +112,7 @@ if (document.starbounded.root.webkitdirectory) {
       // Skip hidden files/directories.
       if (file.name[0] == '.') continue;
 
-      if (file.name.match(/\.world$/)) {
+      if (file.name.match(/\.(ship)?world$/)) {
         addWorld(file);
       } else if (match = path.match(/^Starbound\/assets(\/.*)/)) {
         // Not sure why music files are stored incorrectly like this.
