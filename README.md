@@ -153,6 +153,7 @@ resolved some time in the future):
 
 * Chrome is 50x slower than Firefox at some things
 * Firefox doesn't allow opening or drag/dropping directories
+* Chrome doesn't support `image-rendering: pixelated` for `<canvas>`
 
 
 ### Future
