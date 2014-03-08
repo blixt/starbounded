@@ -131,4 +131,38 @@ $ gulp watch
 It will now watch for changes to any of the source files.
 
 
+Technology
+----------
+
+This project is written to be run completely in a browser. Here's some
+technologically interesting things that this project does/has:
+
+* Rendering big 2D worlds segmented onto tiles of canvases
+* Reading parts of huge binary files (hundreds of MBs) on user's disk
+* Parallelising work in multiple Web Workers
+* Applying image operations such as hue shifting on the fly
+* CommonJS `require` and ECMAScript 6 (Harmony) code using Browserify
+* Bundling code as a Chrome app to improve experience
+
+
+### Obstacles
+
+While it's amazing that browsers can support the things that this are
+done in this project, there were some snags (which will hopefully be
+resolved some time in the future):
+
+* Chrome is 50x slower than Firefox at some things
+* Firefox doesn't allow opening or drag/dropping directories
+
+
+### Future
+
+In the future, these technologies may also be used in this project:
+
+* Retrieving real-time changes to the world through Web Sockets
+* Using a fragment shader in WebGL to render tiles much faster
+* Running a Lua VM in a Web Worker
+* Running a TCP server that interacts with the game (Chrome app)
+
+
 [gulpjs]: http://gulpjs.com/
