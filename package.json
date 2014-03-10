@@ -19,10 +19,11 @@
   },
   "devDependencies": {
     "es6ify": "~0.4.8",
-    "gulp": "~3.5.2",
-    "gulp-browserify": "~0.4.6",
-    "gulp-rename": "~1.1.0",
+    "gulp": "~3.5.5",
+    "gulp-browserify": "~0.5.0",
+    "gulp-rename": "~1.2.0",
     "gulp-uglify": "~0.2.1",
-    "gulp-util": "~2.2.14"
+    "gulp-util": "~2.2.14",
+    "merge": "~1.1.2"
   }
 }

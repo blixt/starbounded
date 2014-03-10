@@ -4,30 +4,48 @@ var browserify = require('gulp-browserify');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var gutil = require('gulp-util');
+var merge = require('merge');
 
-function browserifyPipe(path, opt_newName) {
+function browserifyPipe(path, opt_options) {
   var production = !!gutil.env.production;
 
+  // Default options.
+  var options = {
+    debug: !production,
+    name: null,
+    es6: true,
+    uglify: production
+  };
+
+  // Apply user options.
+  merge(options, opt_options);
+
+  var browserifyOptions = {debug: options.debug};
+  if (options.es6) {
+    browserifyOptions.add = es6ify.runtime;
+    browserifyOptions.transform = es6ify;
+  }
+
   var pipeline = gulp.src(path)
-    .pipe(browserify({add: es6ify.runtime, debug: !production, transform: es6ify}))
+    .pipe(browserify(browserifyOptions))
       .on('error', function (error) {
         gutil.log(gutil.colors.red('Browserify error:'), error.message);
       })
-    .pipe(production ? uglify() : gutil.noop());
+    .pipe(options.uglify ? uglify() : gutil.noop());
 
-  if (opt_newName) {
-    pipeline = pipeline.pipe(rename(opt_newName));
+  if (options.name) {
+    pipeline = pipeline.pipe(rename(options.name));
   }
 
   return pipeline.pipe(gulp.dest('build'));
 }
 
 gulp.task('browserify-worker-assets', function () {
-  return browserifyPipe('node_modules/starbound-assets/worker.js', 'worker-assets.js');
+  return browserifyPipe('node_modules/starbound-assets/worker.js', {name: 'worker-assets.js'});
 });
 
 gulp.task('browserify-worker-world', function () {
-  return browserifyPipe('node_modules/starbound-world/worker.js', 'worker-world.js');
+  return browserifyPipe('node_modules/starbound-world/worker.js', {name: 'worker-world.js'});
 });
 
 gulp.task('browserify-app', ['browserify-worker-assets', 'browserify-worker-world'], function () {
