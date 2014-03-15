@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<title>StarboundEd – Web Viewer</title>
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
 		<style>
 			canvas, img {
 				image-rendering: -moz-crisp-edges;
@@ -11,87 +12,157 @@
 				image-rendering: pixelated;
 			}
 
-			#select-files, .directory-support #select-directory {
-				display: block;
+			#progress {
+				background: #c00;
+				box-shadow: 0 0 5px #f00;
+				height: 5px;
+				left: 0;
+				margin-bottom: 0;
+				position: absolute;
+				top: 50px;
+				transition: width .7s;
+				z-index: 1031;
 			}
 
-			#select-directory, .directory-support #select-files {
-				display: none;
+			#viewport {
+				overflow: hidden;
+				position: absolute;
+				top: 50px;
+				right: 0;
+				bottom: 0;
+				left: 0;
+			}
+
+			.btn-file {
+				position: relative;
+				overflow: hidden;
+			}
+
+			.btn-file input[type=file] {
+				position: absolute;
+				top: 0;
+				right: 0;
+				min-width: 100%;
+				min-height: 100%;
+				font-size: 999px;
+				text-align: right;
+				filter: alpha(opacity=0);
+				opacity: 0;
+				outline: none;
+				background: white;
+				cursor: inherit;
+				display: block;
 			}
 		</style>
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 		<script src="//cdn.ravenjs.com/1.1.11/jquery,native/raven.min.js"></script>
 		<script>
 		Raven.config('https://ce13309e21904e23b12ba85f2c41367e@app.getsentry.com/19811', {}).install();
 		</script>
 	</head>
 	<body>
-		<div class="jumbotron">
-			<div class="container">
-				<div class="page-header">
-					<h1>StarboundEd <small>Web Viewer</small></h1>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+		  <div class="container">
+		    <a class="navbar-brand" href="#">StarboundEd</a>
+				<button type="button" class="btn btn-success navbar-btn" data-toggle="modal" data-target="#world-selector">Open world</button>
+				<p class="navbar-text navbar-right" id="world-status">No world loaded</p>
+		  </div>
+		</nav>
+
+		<div id="progress" style="display: none; width: 0;"></div>
+
+		<div class="modal fade" id="directory-selector">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title">Choose your Starbound directory</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>This world viewer doesn't distribute any of Starbound's resources,
+						so to be able to render the world, it needs to be able to read assets
+						from Starbound's directory on your disk.</p>
+
+						<p id="directory-status">
+							<span class="glyphicon glyphicon-question-sign"></span>
+							<strong>Please choose your Starbound directory</strong>
+						</p>
+
+						<p><input id="directory" type="file" webkitdirectory></p>
+
+						<p class="small mac" style="display: none;"><strong>Tip:</strong> Copy
+						the path below, then click <em>Choose File</em>, then hold down ⌘+⇧+G to
+						open the <em>Go to folder</em> dialog, then paste the path into it.<br>
+						<code>~/Library/Application Support/Steam/SteamApps/common</code></p>
+
+						<p class="small windows" style="display: none;"><strong>Tip:</strong>
+						The Starbound directory is generally located in the following location:<br>
+						<code>C:\Program Files (x86)\Steam\SteamApps\common</code></p>
+		      </div>
+		      <div class="modal-footer">
+		        <button id="load-directory" type="button" class="btn btn-primary" disabled>Load assets</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<div class="modal fade" id="file-selector">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Choose your Starbound assets file</h4>
+					</div>
+					<div class="modal-body">
+						<p>This world viewer doesn't distribute any of Starbound's resources,
+						so to be able to render the world, it needs to be able to read from
+						Starbound's <code>assets/packed.pak</code> file on your disk.</p>
+
+						<p id="file-status">
+							<span class="glyphicon glyphicon-question-sign"></span>
+							<strong>Please choose Starbound's <code>packed.pak</code> file</strong>
+						</p>
+
+						<p><input id="file" type="file"></p>
+
+						<p class="small mac" style="display: none;"><strong>Tip:</strong> Copy
+						the path below, then click <em>Choose File</em>, then hold down ⌘+⇧+G to
+						open the <em>Go to folder</em> dialog, then paste the path into it.<br>
+						<code>~/Library/Application Support/Steam/SteamApps/common/Starbound/assets</code></p>
+
+						<p class="small windows" style="display: none;"><strong>Tip:</strong>
+						The <code>packed.pak</code> file is generally located in the following location:<br>
+						<code>C:\Program Files (x86)\Steam\SteamApps\common\Starbound\assets</code></p>
+					</div>
+					<div class="modal-footer">
+						<button id="load-file" type="button" class="btn btn-primary" disabled>Load assets</button>
+					</div>
 				</div>
-				<p>Welcome! This is a very simple demo of <a href="https://github.com/blixt/starbounded">StarboundEd</a>
-				to show you that it works. Just follow the instructions below! Don't worry, <strong>no data will be uploaded</strong>!
-				Everything that happens on this page stays on your computer. :)</p>
 			</div>
 		</div>
 
-		<form name="starbounded">
-			<div class="container">
-				<div class="row" id="select-files">
-					<div class="col-md-4">
-						<h2>Step 1</h2>
-						<p>Select <code>assets/packed.pak</code>
-						<input name="assets" type="file"></p>
+		<div class="modal fade" id="world-selector">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Choose a world or ship</h4>
 					</div>
-					<div class="col-md-4">
-						<h2>Step 2</h2>
-						<p>Select your <code>.world</code> file
-						<input name="world" type="file"></p>
+					<div class="modal-body">
+						<p>
+							<span class="btn btn-file btn-sm btn-success">
+								Add world files <input id="add-world-files" type="file" multiple>
+							</span>
+						</p>
+						<div class="list-group" id="worlds"></div>
 					</div>
-					<div class="col-md-4">
-						<h2>Step 3</h2>
-						<p>After a few seconds your world should render below.
-						Use the arrow keys to scroll around.</p>
-					</div>
-				</div>
-
-				<div class="row" id="select-directory">
-					<div class="col-md-4">
-						<h2>Step 1</h2>
-						<p>Select your Starbound directory
-						<input name="root" type="file" webkitdirectory></p>
-					</div>
-					<div class="col-md-4">
-						<h2>Step 2</h2>
-						<p>Choose a world, then click <em>Load</em>:<br>
-						<select class="col-md-12" name="worldList" disabled>
-							<option>Select directory first</option>
-						</select><br>
-						<button class="btn btn-xs btn-primary" name="loadWorld" type="button" disabled>Load</button></p>
-					</div>
-					<div class="col-md-4">
-						<h2>Step 3</h2>
-						<p>Profit! After a few seconds your world should render
-						below. Use the arrow keys to scroll around.</p>
-					</div>
-				</div>
-
-				<p>&nbsp;</p>
-
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-default">
-							<div class="panel-heading"><h3 class="panel-title">Rendered world</h3></div>
-							<div class="panel-body" id="viewport" style="overflow: hidden; height: 500px;"></div>
-							<div class="panel-footer" id="audio"></div>
-						</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					</div>
 				</div>
 			</div>
-		</form>
+		</div>
 
-		<script src="build/web.js"></script>
+		<div id="viewport"></div>
 
 		<script>
 		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -102,5 +173,7 @@
 		  ga('create', 'UA-48819902-1', 'blixt.github.io');
 		  ga('send', 'pageview');
 		</script>
+
+		<script src="build/web.js"></script>
 	</body>
 </html>

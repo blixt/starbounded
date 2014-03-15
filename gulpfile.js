@@ -69,8 +69,8 @@ gulp.task('watch', function () {
   ], ['browserify-app', 'browserify-web']);
   // TEMPORARY ^^^
 
-  gulp.watch(['app.js', 'lib/*.js'], ['browserify-app']);
-  gulp.watch(['web.js', 'lib/*.js'], ['browserify-web']);
+  gulp.watch(['app.js', 'lib/**/*.js'], ['browserify-app']);
+  gulp.watch(['web.js', 'lib/**/*.js'], ['browserify-web']);
 });
 
 gulp.task('default', ['browserify-app', 'browserify-web']);

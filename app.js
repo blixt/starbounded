@@ -1,7 +1,4 @@
-var common = require('./lib/common');
-
-var viewport = document.getElementById('viewport');
-var starbound = common.setup(viewport);
+var starbound = require('./lib/starbound').setup(document.getElementById('viewport'));
 
 var openButton = document.getElementById('open');
 
