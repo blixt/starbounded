@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Starbound World Info</title>
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	</head>
+	<body>
+		Choose a world: <input id="world" type="file">
+		<pre id="output"></pre>
+		<script>
+			var worker = new Worker('build/worker-world.js');
+
+			worker.onmessage = function (event) {
+				if (event.data.callResponse == 1) {
+					var response = event.data.arguments[1];
+					var json = JSON.stringify(response.metadata, null, 2);
+					document.getElementById('output').textContent = json;
+					console.log(response.metadata);
+				}
+			};
+
+			document.getElementById('world').onchange = function () {
+				worker.postMessage({callId: 1, call: 'open', arguments: [this.files[0]]});
+			};
+		</script>
+	</body>
+</html>

@@ -8,6 +8,7 @@ git pull >/dev/null && \
 mv temp/{web,worker-assets,worker-world}.js build && \
 rm -r temp && \
 git show master:web.html > index.html && \
+git show master:world.html > world.html && \
 git commit -a && \
 git push origin gh-pages
 
