@@ -1,10 +1,11 @@
+var browserify = require('browserify');
 var es6ify = require('es6ify');
 var gulp = require('gulp');
-var browserify = require('gulp-browserify');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var gutil = require('gulp-util');
 var merge = require('merge');
+var transform = require('vinyl-transform');
 
 function browserifyPipe(path, opt_options) {
   var production = !!gutil.env.production;
@@ -20,14 +21,20 @@ function browserifyPipe(path, opt_options) {
   // Apply user options.
   merge(options, opt_options);
 
-  var browserifyOptions = {debug: options.debug};
-  if (options.es6) {
-    browserifyOptions.add = es6ify.runtime;
-    browserifyOptions.transform = es6ify;
-  }
+  var browserified = transform(function (filename) {
+    var b = browserify({debug: options.debug});
+
+    if (options.es6) {
+      b.add(es6ify.runtime);
+      b.transform(es6ify);
+    }
+
+    b.require(require.resolve(filename), {entry: true});
+    return b.bundle();
+  });
 
   var pipeline = gulp.src(path)
-    .pipe(browserify(browserifyOptions))
+    .pipe(browserified)
       .on('error', function (error) {
         gutil.log(gutil.colors.red('Browserify error:'), error.message);
       })
